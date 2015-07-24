@@ -1,11 +1,12 @@
-//lazy val repositoryUrl = "git:https://github.com/epfldata/squall"
-lazy val repositoryUrl = "git:file:///home/akathorn/Squall/squall/#squallcontext"
-
+// Squall dependencies
+lazy val version = "8ae151f1463406294470e533f9e11904458522b9"
+lazy val repositoryUrl = "git:https://github.com/akathorn/squall#version"
 lazy val squallCoreRepo = ProjectRef(uri(repositoryUrl), "squall")
 lazy val squallFunctionalRepo = ProjectRef(uri(repositoryUrl), "functional")
 
 lazy val root = (Project("root", file(".")) dependsOn(squallCoreRepo, squallFunctionalRepo)).
   settings(
+    // Project settings
     scalaVersion := "2.11.6",
     name := "squall-quickstart",
     organization := "ch.epfl.data",

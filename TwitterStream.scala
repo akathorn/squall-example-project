@@ -8,11 +8,9 @@ import twitter4j._
 import java.util.concurrent.LinkedBlockingQueue
 
 class StatusStreamer(twitterStream: TwitterStream) extends CustomReader {
-  // https://github.com/twitter/tormenta/blob/0.5.2/tormenta-twitter/src/main/scala/com/twitter/tormenta/spout/TwitterSpout.scala
-
   // Initialization
   val queue = new LinkedBlockingQueue[String](1000)
-  val area = Array(Array(5.9517912865,45.9720796059),Array(10.4178924561,47.634536498))
+  val area = Array(Array(5.9517912865,45.9720796059),Array(10.4178924561,47.634536498)) // Switzerland
   twitterStream.addListener(statusListener)
   twitterStream.filter(new FilterQuery().locations(area))
 
@@ -51,15 +49,4 @@ class TwitterProvider extends ReaderProvider {
   }
 
   override def toString(): String = "[Twitter status provider]"
-}
-
-object RunStuff {
-  def run(context: SquallContext): java.util.Map[String,String] = {
-    context.registerReaderProvider(new TwitterProvider())
-    val tweets = Source[String]("twitter")
-    val words  = tweets map { t: String => t.split(" ")(0) }
-    val count  = words groupByKey ( t => 1, t => t )
-    val plan   = count.execute(context)
-    context.submitLocal("wordcount", plan)
- }
 }

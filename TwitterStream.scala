@@ -1,16 +1,12 @@
-package quickstart
-
-import ch.epfl.data.squall.utilities.CustomReader
-import ch.epfl.data.squall.utilities.SquallContext
-import ch.epfl.data.squall.utilities.ReaderProvider
-import ch.epfl.data.squall.api.scala.Stream._
+import ch.epfl.data.squall.utilities.{CustomReader, SquallContext, ReaderProvider}
 import twitter4j._
 import java.util.concurrent.LinkedBlockingQueue
 
 class StatusStreamer(twitterStream: TwitterStream) extends CustomReader {
   // Initialization
   val queue = new LinkedBlockingQueue[String](1000)
-  val area = Array(Array(5.9517912865,45.9720796059),Array(10.4178924561,47.634536498)) // Switzerland
+  val area = Array(Array(5.9517912865,45.9720796059),
+                   Array(10.4178924561,47.634536498)) // Switzerland
   twitterStream.addListener(statusListener)
   twitterStream.filter(new FilterQuery().locations(area))
 

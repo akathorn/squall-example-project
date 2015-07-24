@@ -1,5 +1,3 @@
-package quickstart
-
 import twitter4j._
 
 object Util {

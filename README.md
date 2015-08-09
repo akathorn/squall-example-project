@@ -1,12 +1,26 @@
 # Squall Example Project
-This project shows an example on how to use [Squall](https://github.com/epfldata/squall).
+This project shows an example on how to use [Squall](https://github.com/epfldata/squall). It isn't mean to showcase Squall's features, but instead to provide a set of steps that can help you to quickly start experimenting or to create a new project using it. This example is inspired in [Summing Bird's wordcount](https://github.com/twitter/summingbird#getting-started-word-count-with-twitter), and the code for obtaining tweets was mainly based on [this post](https://bcomposes.wordpress.com/2013/02/09/using-twitter4j-with-scala-to-access-streaming-tweets/).
 
-This readme is under construction ;)
+For this tutorial, we are going to be running everything in local mode. Please refer to the [Squall documentation](https://github.com/epfldata/squall/wiki) for more details on how to run Squall in a cluster. 
+
+Please, take the time to [report](https://github.com/akathorn/squall-example-project/issues/new) any problems you encounter.
+
+
+To get started, clone this repository and `cd` to its directory:
+```bash
+  $ git clone https://github.com/akathorn/squall-example-project.git && cd squall-example-project
+```
+
+## Configuring your Twitter access keys
+Before we start to have fun with Squall, it is necessary to set up your Twitter access keys in the [Utils.scala](https://github.com/akathorn/squall-example-project/blob/master/Util.scala) file. To obtain the keys, go to https://apps.twitter.com/ and create a new app. There is an explanation on how to to this in [the post](https://bcomposes.wordpress.com/2013/02/09/using-twitter4j-with-scala-to-access-streaming-tweets/) mentioned above, under the section called "Setting up authorization".
 
 ## Using the Squall REPL to run the example
-To start the Squall interactive shell, run `sbt console` in the project directory.
+If everything was set up correctly, we can get started with the real stuff. We are going to grab tweets around Switzerland using the Twitter API, and count the words in them using Squall's functional interface.
 
-First, we need to register the reader provider we defined for Twitter.
+To start the [Squall interactive shell](https://github.com/epfldata/squall/wiki/Squall-REPL), run `sbt console` in the project directory. This might take a while the first time you run it, as it will fetch dependencies and compile everything. Once this is done, the REPL will preload Squall and we can then use the console to construct and run a Squall query plan.
+
+
+First, we need to register a reader provider for Twitter. This reader provider was defined for this example [here](https://github.com/akathorn/squall-example-project/blob/master/TwitterStream.scala#L33).
 ```Scala
 scala> context.registerReaderProvider(new TwitterProvider())
 ```
@@ -45,7 +59,7 @@ scala> result.get("summer")
 res9: String = 1
 ```
 
-
+Of course, your results will be different. You can try to wait a few minutes and see what you collected. Of course, Squall's REPL is also a Scala REPL and therefore you can do any operations you want with the resulting map.
 
 
 ## Step by step how-to

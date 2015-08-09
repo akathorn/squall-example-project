@@ -63,7 +63,41 @@ Of course, your results will be different. You can try to wait a few minutes and
 
 
 ## Step by step how-to
-### Setting up the SBT dependencies
+Let's look more carefully at what was needed to set up this example.
+
+### Setting up the sbt dependencies
+**tl;dr**: you might just want to read the code in [build.sbt](https://github.com/akathorn/squall-example-project/blob/master/build.sbt).
+
+Both Squall and this example project use sbt for building and running. At this moment, Squall is not available in any repository (such as Maven), and we don't compile .jar releases very frequently as Squall is under heavy development. However, we can tell sbt to pull dependencies from GitHub.
+
+We first define the dependencies.
+```scala
+// Squall dependencies
+lazy val squallVersion = "8ae151f1463406294470e533f9e11904458522b9"
+lazy val repositoryUrl = "git:https://github.com/akathorn/squall#" + squallVersion
+lazy val squallCoreRepo = ProjectRef(uri(repositoryUrl), "squall")
+lazy val squallFunctionalRepo = ProjectRef(uri(repositoryUrl), "functional")
+```
+Note that we are referencing a specific commit of Squall. This is done to ensure that the tutorial compiles even if we break the build in the main repository, which of course **never** happens.
+
+Now `squallCoreRepo` and `squallFunctionalRepo` can be used as dependencies when defining the project:
+```scala
+lazy val root = (Project("root", file(".")) dependsOn(squallCoreRepo, squallFunctionalRepo)).
+```
+
+Then comes the usual sbt settings, nothing weird there. We also need to add the Twitter libraries to the dependencies
+```scala
+    libraryDependencies += "org.twitter4j" % "twitter4j-stream" % "3.0.3",
+```
+
+If you want to use the Squall REPL with the code from your project (which of course, you do!), then we can set it up with these two lines:
+
+```scala
+    fullClasspath in (Compile, console) in squallFunctionalRepo ++= (fullClasspath in console in Compile).value,
+    console in Compile <<= (console in Compile in squallFunctionalRepo)
+```
+
+
 ### Defining a new data source
 Using Twitter Streaming API to obtain tweets.
 

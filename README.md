@@ -99,14 +99,13 @@ If you want to use the Squall REPL with the code from your project (which of cou
 
 
 ### Defining a new data source
-Using Twitter Streaming API to obtain tweets.
+This section gives a walkthrough of the code in [TwitterStream.scala](./TwitterStream.scala).
 
-[TwitterStream.scala](./TwitterStream.scala)
-```Scala
-import ch.epfl.data.squall.utilities.{CustomReader, SquallContext, ReaderProvider}
-import twitter4j._
-import java.util.concurrent.LinkedBlockingQueue
+We want to create a Squall data source that reads Tweets. For this, as explained in the [documentation](https://github.com/epfldata/squall/wiki/Data-Sources#defining-new-data-sources), we have to define a `CustomReader`.
 
+We are going to use a [LinkedBlockingQueue](http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/LinkedBlockingQueue.html) to store the Tweets.
+
+```scala
 class StatusStreamer(twitterStream: TwitterStream) extends CustomReader {
   // Initialization
   val queue = new LinkedBlockingQueue[String](1000)
@@ -115,6 +114,10 @@ class StatusStreamer(twitterStream: TwitterStream) extends CustomReader {
   twitterStream.addListener(statusListener)
   twitterStream.filter(new FilterQuery().locations(area))
 
+```
+
+We have to define the `StatusListener`, which will basically just `offer` the tweets to the queue:
+```scala
   def statusListener = new StatusListener() {
     def onStatus(status: Status) { queue.offer(status.getText) }
     def onDeletionNotice(statusDeletionNotice: StatusDeletionNotice) {}
@@ -123,6 +126,10 @@ class StatusStreamer(twitterStream: TwitterStream) extends CustomReader {
     def onScrubGeo(arg0: Long, arg1: Long) {}
     def onStallWarning(warning: StallWarning) {}
   }
+```
+
+We need to implement the `readLine` method from the CustomReader interface, which will take elements from the queue, and also the `close` method which will simply cleanup.
+```scala
 
   override def readLine(): String = {
     queue.take()
@@ -135,6 +142,11 @@ class StatusStreamer(twitterStream: TwitterStream) extends CustomReader {
   }
 }
 
+```
+
+
+Now we have to define a `ReaderProvider` for Twitter sources. It will only provide a "table" named `twitter`.
+```scala
 class TwitterProvider extends ReaderProvider {
   override def canProvide (context: SquallContext, name: String) = {
     name == "twitter"
